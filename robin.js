@@ -67,7 +67,7 @@ R = (function (global, document, undefined) {
                     if (dep[0] != ".") {
                         // Recurse up the tree trying to find the dependency
                         // (generating 404s on the way)
-                        text = "/../";
+                        text = "../";
                         o = function (err, m) {
                             if (err) {
                                 deepLoad(m.n = getModule(resolve(module.l + (text += "../"), dep)), o);
