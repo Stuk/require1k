@@ -58,10 +58,9 @@ R = (function (global, document) {
                         // are no dependencies. Putting this check first
                         // and the decrement after saves us an `if` for that
                         // special case
-                        if (!count) {
+                        if (!count--) {
                             callback();
                         }
-                        count--;
                     }
                     for (var i = 0; i < deps.length; i++) {
                         getModule(resolve(self.l, deps[i])).D(loaded);
