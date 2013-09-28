@@ -66,7 +66,7 @@
                     loaded();
                 }
             };
-            request.open("GET", location, true);
+            request.open("GET", location + ".js", true);
             request.send();
         },
         E: function () {
