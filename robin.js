@@ -62,7 +62,7 @@ R = (function (global, document, undefined) {
                         callback(undefined, module);
                     }
                 }
-                deps.forEach(function (dep) {
+                deps.map(function (dep) {
                     o = loaded;
                     if (dep[0] != ".") {
                         // Recurse up the tree trying to find the dependency
