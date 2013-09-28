@@ -92,17 +92,16 @@ R = (function (global, document, undefined) {
         if (module.n) {
             return getExports(module.n);
         }
-        if (module[tmp]) {
-            return module[tmp];
-        }
 
-        globalEval("(function(require,exports,module){"+module.t+"\n})")(
-            function require (id) {
-                return getExports(MODULES[resolve(module.l, id)]);
-            }, // require
-            module[tmp] = {}, // exports
-            module // module
-        );
+        if (!module[tmp]) {
+            globalEval("(function(require,exports,module){"+module.t+"\n})")(
+                function require (id) {
+                    return getExports(MODULES[resolve(module.l, id)]);
+                }, // require
+                module[tmp] = {}, // exports
+                module // module
+            );
+        }
 
         return module[tmp];
     }
