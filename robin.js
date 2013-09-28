@@ -54,13 +54,17 @@ R = (function (global, document) {
                     var deps = Object.keys(o);
                     var count = deps.length;
                     function loaded() {
+                        // We call loaded straight away below in case there
+                        // are no dependencies. Putting this check first
+                        // and the decrement after saves us an `if` for that
+                        // special case
                         if (!count) {
                             callback();
                         }
                         count--;
                     }
                     for (var i = 0; i < deps.length; i++) {
-                        getModule(resolve(self.l, deps[0])).D(loaded);
+                        getModule(resolve(self.l, deps[i])).D(loaded);
                     }
                     loaded();
                 }
