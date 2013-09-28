@@ -46,9 +46,8 @@
 
             var request = new XMLHttpRequest();
             request.onload = function () {
-                var text = request.responseText;
-                if (request.status === 200 || (request.status === 0 && text)) {
-                    self.text = text;
+                if (request.status === 200) {
+                    var text = self.text = request.responseText;
                     var o = {};
                     text.replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function (_, id) {
                         o[id] = true;
