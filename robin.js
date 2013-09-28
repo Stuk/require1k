@@ -40,7 +40,7 @@ R = (function (global, document) {
         var request = new XMLHttpRequest();
         request.onload = function () {
             if (request.status == 200) {
-                var text = module.text = request.responseText;
+                var text = module.text = request.response;
                 var o = {};
                 text.replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function (_, id) {
                     o[id] = true;
