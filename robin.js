@@ -6,9 +6,9 @@ R = (function (global, document, undefined) {
     // http://www.davidflanagan.com/2010/12/global-eval-in.html
     var globalEval = eval;
 
-    var createElement = "createElement",
-        baseElement = document[createElement]("base"),
-        relativeElement = document[createElement]("a");
+    var property = "createElement",
+        baseElement = document[property]("base"),
+        relativeElement = document[property]("a");
     document.head.appendChild(baseElement);
 
     function resolve(base, relative, resolved) {
@@ -44,15 +44,15 @@ R = (function (global, document, undefined) {
         var location = module.l;
 
         var request = new XMLHttpRequest();
-        request.onload = function (text, o) {
+        request.onload = function (text, deps, count) {
             if (request.status == 200) {
                 text = module.t = request.response;
-                o = {};
+                deps = {};
                 text.replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function (_, id) {
-                    o[id] = true;
+                    deps[id] = true;
                 });
-                var deps = Object.keys(o);
-                var count = deps.length;
+                deps = Object.keys(deps);
+                count = deps.length;
                 function loaded() {
                     // We call loaded straight away below in case there
                     // are no dependencies. Putting this check first
@@ -63,20 +63,20 @@ R = (function (global, document, undefined) {
                     }
                 }
                 deps.map(function (dep) {
-                    o = loaded;
+                    deps = loaded;
                     if (dep[0] != ".") {
                         // Recurse up the tree trying to find the dependency
                         // (generating 404s on the way)
                         text = "../";
-                        o = function (err, m) {
+                        deps = function (err, m) {
                             if (err) {
-                                deepLoad(m.n = getModule(resolve(module.l + (text += "../"), dep)), o);
+                                deepLoad(m.n = getModule(resolve(module.l + (text += "../"), dep)), deps);
                             } else {
                                 loaded();
                             }
                         };
                     }
-                    deepLoad(getModule(resolve(module.l, dep)), o);
+                    deepLoad(getModule(resolve(module.l, dep)), deps);
                 });
                 loaded();
             } else {
