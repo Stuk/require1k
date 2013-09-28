@@ -31,7 +31,7 @@ R = (function (global, document) {
 
     function deepLoad(module, callback) {
         if (module.g) {
-            return callback();
+            return callback(module);
         }
         module.g = true;
 
@@ -53,7 +53,7 @@ R = (function (global, document) {
                     // and the decrement after saves us an `if` for that
                     // special case
                     if (!count--) {
-                        callback();
+                        callback(module);
                     }
                 }
                 for (var i = 0; i < deps.length; i++) {
@@ -83,18 +83,17 @@ R = (function (global, document) {
     }
 
     function R(id, callback) {
-        var mainModule = getModule(resolve(location, id));
-        deepLoad(mainModule, function () {
-            callback(getExports(mainModule));
+        deepLoad(getModule(resolve(location, id)), function (module) {
+            id = getExports(module);
+            if (callback) {
+                callback(id);
+            }
         });
     }
 
     var script = document.querySelector("script[data-main]");
     if (script) {
-        // we don't care about calling the callback, but need one to avoid
-        // an error. `btoa` is the shortest global function we can call
-        // that won't throw an error and has no side effects
-        R(script.getAttribute("data-main"), btoa);
+        R(script.getAttribute("data-main"));
     }
 
     return R;
