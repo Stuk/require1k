@@ -15,14 +15,12 @@ R = (function (global, document, undefined) {
     baseElement.href = "";
 
     function resolve(base, relative, resolved) {
-        if (/^\./.test(relative)) {
-            baseElement.href = base;
-            relativeElement.href = relative;
-            resolved = relativeElement.href;
-            baseElement.href = "";
-        } else {
-            resolved = resolve(base, "./node_modules/" + relative);
-        }
+        baseElement.href = base;
+        // If the relative url begins with a letter (and not a "."), then it's
+        // in node_modules
+        relativeElement.href = relative.replace(/^(\w)/, "./node_modules/$1");
+        resolved = relativeElement.href;
+        baseElement.href = "";
         return resolved;
 
     }
