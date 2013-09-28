@@ -6,13 +6,10 @@ R = (function (global, document, undefined) {
     // http://www.davidflanagan.com/2010/12/global-eval-in.html
     var globalEval = eval;
 
-    var head = document.head,
-        baseElement = document.createElement("base"),
-        relativeElement = document.createElement("a");
-    head.appendChild(baseElement);
-
-
-    baseElement.href = "";
+    var createElement = "createElement",
+        baseElement = document[createElement]("base"),
+        relativeElement = document[createElement]("a");
+    document.head.appendChild(baseElement);
 
     function resolve(base, relative, resolved) {
         baseElement.href = base;
