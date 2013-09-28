@@ -1,4 +1,4 @@
-/*jshint node:false */
+/*jshint node:false, -W082, -W017 */
 R = (function (global, document) {
     var MODULES = {};
 

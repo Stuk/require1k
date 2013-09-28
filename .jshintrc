@@ -1,5 +1,13 @@
 {
     "unused": true,
     "evil": true,
-    "undef": true
+    "undef": true,
+    "globals": {
+        "R": true,
+        "XMLHttpRequest": false,
+        "location": false,
+        "btoa": false,
+        "window": false,
+        "document": false
+    }
 }
