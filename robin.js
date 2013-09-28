@@ -30,7 +30,7 @@ R = (function (global, document, undefined) {
     //      before. Used to prevent the same module being loaded twice
     // - l: string, Location, the url location of this module
     // - t: string, Text, the text content of the module
-    // - e: boolean, Error, true if there was an error (probably a 404) loading the module
+    // - e: boolean-y, Error, truthy if there was an error (probably a 404) loading the module
     // - n: module object, Next, instead of using this module, use the object
     //      pointed to by this property. Used for dependencies in other packages
     // - exports, object, the exports of the module!
@@ -83,7 +83,7 @@ R = (function (global, document, undefined) {
                 });
                 loaded();
             } else {
-                callback(module.e = true, module);
+                callback(module.e = request, module);
             }
         };
         request.open("GET", location + ".js", true);
