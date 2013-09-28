@@ -94,18 +94,12 @@ R = (function (global) {
         });
     }
 
-    var main;
-    var scripts = document.scripts;
-    for (var i = 0; i < scripts.length; i++) {
-        var script = scripts[i];
-        main = script.getAttribute("data-main");
-        if (main) {
-            R(main, btoa);
-            // we don't care about calling the callback, but need one to avoid
-            // an error. `btoa` is the shortest global function we can call
-            // that won't throw an error and has no side effects
-            break;
-        }
+    var script = document.querySelector("script[data-main]");
+    if (script) {
+        // we don't care about calling the callback, but need one to avoid
+        // an error. `btoa` is the shortest global function we can call
+        // that won't throw an error and has no side effects
+        R(script.getAttribute("data-main"), btoa);
     }
 
     return R;
