@@ -70,7 +70,7 @@ R = (function (global, document, undefined) {
                         text = "../";
                         deps = function (err, m) {
                             if (err) {
-                                deepLoad(m.n = getModule(resolve(module.l + (text += "../"), dep)), deps);
+                                deepLoad(m.n = getModule(resolve(location + (text += "../"), dep)), deps);
                             } else {
                                 loaded();
                             }
