@@ -1,52 +1,29 @@
 /*jshint node:false */
 (function (global) {
     var MODULES = {};
+    var document = global.document;
 
     // By using a named "eval" most browsers will execute in the global scope.
     // http://www.davidflanagan.com/2010/12/global-eval-in.html
-    // Unfortunately execScript doesn't always return the value of the evaluated expression (at least in Chrome)
     var globalEval = eval;
-    // For Firebug evaled code isn't debuggable otherwise
-    // http://code.google.com/p/fbug/issues/detail?id=2198
-    if (global.navigator && global.navigator.userAgent.indexOf("Firefox") >= 0) {
-        globalEval = new Function("_", "return eval(_)");
-    }
 
-    var __FILE__String = "__FILE__",
-        DoubleUnderscoreString = "__",
-        globalEvalConstantA = "(function ",
-        globalEvalConstantB = "(require, exports, module) {",
-        globalEvalConstantC = "//*/\n})\n//@ sourceURL=";
-
-
-    var head = document.querySelector("head"),
+    var head = document.head,
         baseElement = document.createElement("base"),
         relativeElement = document.createElement("a");
+    head.appendChild(baseElement);
+
 
     baseElement.href = "";
 
     function resolve(base, relative) {
-        var currentBaseElement = head.querySelector("base");
-        if (!currentBaseElement) {
-            head.appendChild(baseElement);
-            currentBaseElement = baseElement;
-        }
-        base = String(base);
-        if (!/^[\w\-]+:/.test(base)) { // isAbsolute(base)
-            throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
-        }
-        var restore = currentBaseElement.href;
-        currentBaseElement.href = base;
+        baseElement.href = base;
         relativeElement.href = relative;
         var resolved = relativeElement.href;
-        currentBaseElement.href = restore;
-        if (currentBaseElement === baseElement) {
-            head.removeChild(currentBaseElement);
-        }
+        baseElement.href = "";
         return resolved;
     }
 
-    function getMain(scriptName) {
+    function getMain() {
         var scripts = document.getElementsByTagName("script");
         for (var i = 0; i < scripts.length; i++) {
             var script = scripts[i];
@@ -66,10 +43,10 @@
     }
 
     function Module(location) {
-        this.location = location;
+        this.l = location;
     }
     // TODO move into function for better compression?
-    Module.parseDependencies = function (text) {
+    Module.p = function (text) {
         var o = {};
         String(text).replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function (_, id) {
             o[id] = true;
@@ -77,9 +54,9 @@
         return Object.keys(o);
     };
     Module.prototype = {
-        load: function (callback) {
+        L: function (callback) {
             var self = this;
-            var location = self.location;
+            var location = self.l;
 
             if (self.loading || self.loaded) {
                 callback();
@@ -94,17 +71,16 @@
                     self.text = request.responseText;
                     return callback();
                 }
-                throw new Error("Cannnot load " + location);
             };
             request.open("GET", location, true);
             request.send();
         },
-        deepLoad: function (callback) {
+        D: function (callback) {
             var self = this;
-            self.load(function () {
-                var deps = self.dependencies = Module.parseDependencies(self.text);
+            self.L(function () {
+                var deps = self.dependencies = Module.p(self.text);
                 if (deps.length) {
-                    getModule(resolve(self.location, deps[0])).deepLoad(function () {
+                    getModule(resolve(self.l, deps[0])).D(function () {
                         callback();
                     });
                 } else {
@@ -112,63 +88,52 @@
                 }
             });
         },
-        makeRequire: function () {
+        R: function () {
             var self = this;
             return function require (id) {
-                var topId = resolve(self.location, id);
+                var topId = resolve(self.l, id);
                 var module = MODULES[topId];
-                if (!module) {
-                    throw new Error("Cannot find module '" + id + "'");
-                }
-                return module.getExports();
+                // if (!module) {
+                //     throw new Error("Can't find " + id);
+                // }
+                return module.E();
             };
         },
-        getExports: function () {
-            if (this.exports) {
-                return this.exports;
+        E: function () {
+            var self = this;
+            if (self.exports) {
+                return self.exports;
             }
 
             var factory;
-            // Here we use a couple tricks to make debugging better in various browsers:
-            // TODO: determine if these are all necessary / the best options
-            // 1. name the function with something inteligible since some debuggers display the first part of each eval (Firebug)
-            // 2. append the "//@ sourceURL=location" hack (Safari, Chrome, Firebug)
-            //  * http://pmuellr.blogspot.com/2009/06/debugger-friendly.html
-            //  * http://blog.getfirebug.com/2009/08/11/give-your-eval-a-name-with-sourceurl/
-            //      TODO: investigate why this isn't working in Firebug.
-            // 3. set displayName property on the factory function (Safari, Chrome)
-            var displayName = __FILE__String+this.location.replace(/\.\w+$|\W/g, DoubleUnderscoreString);
-
             try {
-                factory = globalEval(globalEvalConstantA+displayName+globalEvalConstantB+this.text+globalEvalConstantC+this.location);
+                factory = globalEval("(function(require, exports, module){"+self.text+"\n})");
             } catch (exception) {
-                exception.message = exception.message + " in " + this.location;
+                exception.message += " in " + self.l;
                 throw exception;
             }
 
-            factory.displayName = displayName;
-
-            this.require = this.makeRequire();
-            this.exports = {};
+            self.r = self.R();
+            self.exports = {};
 
             factory.call(
                 void 0, // this (defaults to global)
-                this.require, // require
-                this.exports, // exports
-                this // module
+                self.r, // require
+                self.exports, // exports
+                self // module
             );
 
-            return this.exports;
+            return self.exports;
         }
     };
 
     var main = getMain();
-    if (!main) {
-        throw new Error("No data-main attribute found on any script elements");
-    }
+    // if (!main) {
+    //     throw new Error("No data-main found");
+    // }
     var mainModule = getModule(main);
-    mainModule.deepLoad(function () {
-        mainModule.getExports();
+    mainModule.D(function () {
+        mainModule.E();
     });
 
 }(window));
