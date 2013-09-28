@@ -34,30 +34,7 @@
     function Module(location) {
         this.l = location;
     }
-    // TODO move into function for better compression?
-    Module.p = function (text) {
-        var o = {};
-        text.replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function (_, id) {
-            o[id] = true;
-        });
-        return Object.keys(o);
-    };
     Module.prototype = {
-        L: function (callback) {
-            var self = this;
-            var location = self.l;
-
-            var request = new XMLHttpRequest();
-            request.onload = function () {
-                var text = request.responseText;
-                if (request.status === 200 || (request.status === 0 && text)) {
-                    self.text = text;
-                    return callback();
-                }
-            };
-            request.open("GET", location, true);
-            request.send();
-        },
         D: function (callback) {
             var self = this;
             if (self.g) {
@@ -65,26 +42,33 @@
             }
             self.g = true;
 
-            self.L(function () {
-                var deps = Module.p(self.text);
-                var count = deps.length;
-                function loaded() {
-                    if (!count) {
-                        callback();
+            var location = self.l;
+
+            var request = new XMLHttpRequest();
+            request.onload = function () {
+                var text = request.responseText;
+                if (request.status === 200 || (request.status === 0 && text)) {
+                    self.text = text;
+                    var o = {};
+                    text.replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function (_, id) {
+                        o[id] = true;
+                    });
+                    var deps = Object.keys(o);
+                    var count = deps.length;
+                    function loaded() {
+                        if (!count) {
+                            callback();
+                        }
+                        count--;
                     }
-                    count--;
+                    for (var i = 0; i < deps.length; i++) {
+                        getModule(resolve(self.l, deps[0])).D(loaded);
+                    }
+                    loaded();
                 }
-                for (var i = 0; i < deps.length; i++) {
-                    getModule(resolve(self.l, deps[0])).D(loaded);
-                }
-                loaded();
-            });
-        },
-        R: function () {
-            var self = this;
-            return function require (id) {
-                return MODULES[resolve(self.l, id)].E();
             };
+            request.open("GET", location, true);
+            request.send();
         },
         E: function () {
             var self = this;
@@ -93,7 +77,9 @@
             }
 
             globalEval("(function(require, exports, module){"+self.text+"\n})")(
-                self.R(), // require
+                function require (id) {
+                    return MODULES[resolve(self.l, id)].E();
+                }, // require
                 self.exports = {}, // exports
                 self // module
             );
