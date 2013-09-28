@@ -24,75 +24,68 @@ R = (function (global, document) {
 
     function getModule(location) {
         if (!MODULES[location]) {
-            MODULES[location] = new Module(location);
+            MODULES[location] = {l: location};
         }
-
         return MODULES[location];
     }
 
-    function Module(location) {
-        this.l = location;
-    }
-    Module.prototype = {
-        D: function (callback) {
-            var self = this;
-            if (self.g) {
-                return callback();
-            }
-            self.g = true;
-
-            var location = self.l;
-
-            var request = new XMLHttpRequest();
-            request.onload = function () {
-                if (request.status == 200) {
-                    var text = self.text = request.responseText;
-                    var o = {};
-                    text.replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function (_, id) {
-                        o[id] = true;
-                    });
-                    var deps = Object.keys(o);
-                    var count = deps.length;
-                    function loaded() {
-                        // We call loaded straight away below in case there
-                        // are no dependencies. Putting this check first
-                        // and the decrement after saves us an `if` for that
-                        // special case
-                        if (!count--) {
-                            callback();
-                        }
-                    }
-                    for (var i = 0; i < deps.length; i++) {
-                        getModule(resolve(self.l, deps[i])).D(loaded);
-                    }
-                    loaded();
-                }
-            };
-            request.open("GET", location + ".js", true);
-            request.send();
-        },
-        E: function () {
-            var self = this;
-            if (self.exports) {
-                return self.exports;
-            }
-
-            globalEval("(function(require, exports, module){"+self.text+"\n})")(
-                function require (id) {
-                    return MODULES[resolve(self.l, id)].E();
-                }, // require
-                self.exports = {}, // exports
-                self // module
-            );
-
-            return self.exports;
+    function deepLoad(module, callback) {
+        if (module.g) {
+            return callback();
         }
-    };
+        module.g = true;
+
+        var location = module.l;
+
+        var request = new XMLHttpRequest();
+        request.onload = function () {
+            if (request.status == 200) {
+                var text = module.text = request.responseText;
+                var o = {};
+                text.replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function (_, id) {
+                    o[id] = true;
+                });
+                var deps = Object.keys(o);
+                var count = deps.length;
+                function loaded() {
+                    // We call loaded straight away below in case there
+                    // are no dependencies. Putting this check first
+                    // and the decrement after saves us an `if` for that
+                    // special case
+                    if (!count--) {
+                        callback();
+                    }
+                }
+                for (var i = 0; i < deps.length; i++) {
+                    deepLoad(getModule(resolve(module.l, deps[i])), loaded);
+                }
+                loaded();
+            }
+        };
+        request.open("GET", location + ".js", true);
+        request.send();
+    }
+
+    function getExports(module) {
+        if (module.exports) {
+            return module.exports;
+        }
+
+        globalEval("(function(require, exports, module){"+module.text+"\n})")(
+            function require (id) {
+                return getExports(MODULES[resolve(module.l, id)]);
+            }, // require
+            module.exports = {}, // exports
+            module // module
+        );
+
+        return module.exports;
+    }
 
     function R(id, callback) {
         var mainModule = getModule(resolve(location, id));
-        mainModule.D(function () {
-            callback(mainModule.E());
+        deepLoad(mainModule, function () {
+            callback(getExports(mainModule));
         });
     }
 
