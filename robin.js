@@ -6,9 +6,9 @@ R = (function (global, document, undefined) {
     // http://www.davidflanagan.com/2010/12/global-eval-in.html
     var globalEval = eval;
 
-    var property = "createElement",
-        baseElement = document[property]("base"),
-        relativeElement = document[property]("a");
+    var tmp = "createElement",
+        baseElement = document[tmp]("base"),
+        relativeElement = document[tmp]("a");
     document.head.appendChild(baseElement);
 
     function resolve(base, relative, resolved) {
@@ -115,9 +115,9 @@ R = (function (global, document, undefined) {
         });
     }
 
-    var script = document.querySelector("script[data-main]");
-    if (script) {
-        R(script.getAttribute("data-main"));
+    tmp = document.querySelector("script[data-main]");
+    if (tmp) {
+        R(tmp.getAttribute("data-main"));
     }
 
     return R;
