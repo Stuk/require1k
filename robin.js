@@ -23,17 +23,6 @@
         return resolved;
     }
 
-    function getMain() {
-        var scripts = document.getElementsByTagName("script");
-        for (var i = 0; i < scripts.length; i++) {
-            var script = scripts[i];
-            var main = script.getAttribute("data-main");
-            if (main) {
-                return resolve(location.href, main);
-            }
-        }
-    }
-
     function getModule(location) {
         if (!MODULES[location]) {
             MODULES[location] = new Module(location);
@@ -48,7 +37,7 @@
     // TODO move into function for better compression?
     Module.p = function (text) {
         var o = {};
-        String(text).replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function (_, id) {
+        text.replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function (_, id) {
             o[id] = true;
         });
         return Object.keys(o);
@@ -58,17 +47,11 @@
             var self = this;
             var location = self.l;
 
-            if (self.loading || self.loaded) {
-                callback();
-            }
-            self.loading = true;
-
             var request = new XMLHttpRequest();
             request.onload = function () {
-                delete self.loading;
-                self.loaded = true;
-                if (request.status === 200 || (request.status === 0 && request.responseText)) {
-                    self.text = request.responseText;
+                var text = request.responseText;
+                if (request.status === 200 || (request.status === 0 && text)) {
+                    self.text = text;
                     return callback();
                 }
             };
@@ -77,15 +60,24 @@
         },
         D: function (callback) {
             var self = this;
+            if (self.g) {
+                return callback();
+            }
+            self.g = true;
+
             self.L(function () {
-                var deps = self.dependencies = Module.p(self.text);
-                if (deps.length) {
-                    getModule(resolve(self.l, deps[0])).D(function () {
+                var deps = Module.p(self.text);
+                var count = deps.length;
+                function loaded() {
+                    if (!count) {
                         callback();
-                    });
-                } else {
-                    callback();
+                    }
+                    count--;
                 }
+                for (var i = 0; i < deps.length; i++) {
+                    getModule(resolve(self.l, deps[0])).D(loaded);
+                }
+                loaded();
             });
         },
         R: function () {
@@ -116,8 +108,7 @@
             self.r = self.R();
             self.exports = {};
 
-            factory.call(
-                void 0, // this (defaults to global)
+            factory(
                 self.r, // require
                 self.exports, // exports
                 self // module
@@ -127,7 +118,16 @@
         }
     };
 
-    var main = getMain();
+    var main;
+    var scripts = document.scripts;
+    for (var i = 0; i < scripts.length; i++) {
+        var script = scripts[i];
+        main = script.getAttribute("data-main");
+        if (main) {
+            main = resolve(location.href, main);
+            break;
+        }
+    }
     // if (!main) {
     //     throw new Error("No data-main found");
     // }
