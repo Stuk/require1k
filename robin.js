@@ -83,12 +83,7 @@
         R: function () {
             var self = this;
             return function require (id) {
-                var topId = resolve(self.l, id);
-                var module = MODULES[topId];
-                // if (!module) {
-                //     throw new Error("Can't find " + id);
-                // }
-                return module.E();
+                return MODULES[resolve(self.l, id)].E();
             };
         },
         E: function () {
@@ -97,20 +92,9 @@
                 return self.exports;
             }
 
-            var factory;
-            try {
-                factory = globalEval("(function(require, exports, module){"+self.text+"\n})");
-            } catch (exception) {
-                exception.message += " in " + self.l;
-                throw exception;
-            }
-
-            self.r = self.R();
-            self.exports = {};
-
-            factory(
-                self.r, // require
-                self.exports, // exports
+            globalEval("(function(require, exports, module){"+self.text+"\n})")(
+                self.R(), // require
+                self.exports = {}, // exports
                 self // module
             );
 
