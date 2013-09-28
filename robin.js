@@ -95,7 +95,7 @@ R = (function (global, document, undefined) {
             return module.exports;
         }
 
-        globalEval("(function(require, exports, module){"+module.t+"\n})")(
+        globalEval("(function(require,exports,module){"+module.t+"\n})")(
             function require (id) {
                 return getExports(MODULES[resolve(module.l, id)]);
             }, // require
