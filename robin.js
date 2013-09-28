@@ -10,6 +10,7 @@ R = (function (global, document, undefined) {
         baseElement = document[tmp]("base"),
         relativeElement = document[tmp]("a");
     document.head.appendChild(baseElement);
+    tmp = "exports";
 
     function resolve(base, relative, resolved) {
         baseElement.href = base;
@@ -91,19 +92,19 @@ R = (function (global, document, undefined) {
         if (module.n) {
             return getExports(module.n);
         }
-        if (module.exports) {
-            return module.exports;
+        if (module[tmp]) {
+            return module[tmp];
         }
 
         globalEval("(function(require,exports,module){"+module.t+"\n})")(
             function require (id) {
                 return getExports(MODULES[resolve(module.l, id)]);
             }, // require
-            module.exports = {}, // exports
+            module[tmp] = {}, // exports
             module // module
         );
 
-        return module.exports;
+        return module[tmp];
     }
 
     function R(id, callback) {
