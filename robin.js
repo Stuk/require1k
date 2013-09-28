@@ -1,7 +1,6 @@
 /*jshint node:false */
-R = (function (global) {
+R = (function (global, document) {
     var MODULES = {};
-    var document = global.document;
 
     // By using a named "eval" most browsers will execute in the global scope.
     // http://www.davidflanagan.com/2010/12/global-eval-in.html
@@ -104,4 +103,4 @@ R = (function (global) {
 
     return R;
 
-}(window));
+}(window, document));
