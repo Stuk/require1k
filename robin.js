@@ -1,5 +1,5 @@
 /*jshint node:false */
-(function (global) {
+R = (function (global) {
     var MODULES = {};
     var document = global.document;
 
@@ -87,22 +87,27 @@
         }
     };
 
+    function R(id, callback) {
+        var mainModule = getModule(resolve(location, id));
+        mainModule.D(function () {
+            callback(mainModule.E());
+        });
+    }
+
     var main;
     var scripts = document.scripts;
     for (var i = 0; i < scripts.length; i++) {
         var script = scripts[i];
         main = script.getAttribute("data-main");
         if (main) {
-            main = resolve(location.href, main);
+            R(main, btoa);
+            // we don't care about calling the callback, but need one to avoid
+            // an error. `btoa` is the shortest global function we can call
+            // that won't throw an error and has no side effects
             break;
         }
     }
-    // if (!main) {
-    //     throw new Error("No data-main found");
-    // }
-    var mainModule = getModule(main);
-    mainModule.D(function () {
-        mainModule.E();
-    });
+
+    return R;
 
 }(window));
