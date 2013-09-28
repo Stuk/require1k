@@ -27,6 +27,15 @@ R = (function (global, document, undefined) {
 
     }
 
+    // A module has the following properties (shorted to one letter to aid compression)
+    // - g: boolean, loadinG, true if this module has been requested for loading
+    //      before. Used to prevent the same module being loaded twice
+    // - l: string, Location, the url location of this module
+    // - t: string, Text, the text content of the module
+    // - e: boolean, Error, true if there was an error (probably a 404) loading the module
+    // - n: module object, Next, instead of using this module, use the object
+    //      pointed to by this property. Used for dependencies in other packages
+    // - exports, object, the exports of the module!
     function getModule(location) {
         if (!MODULES[location]) {
             MODULES[location] = {l: location};
@@ -45,7 +54,7 @@ R = (function (global, document, undefined) {
         var request = new XMLHttpRequest();
         request.onload = function (text, o) {
             if (request.status == 200) {
-                text = module.text = request.response;
+                text = module.t = request.response;
                 o = {};
                 text.replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function (_, id) {
                     o[id] = true;
@@ -94,7 +103,7 @@ R = (function (global, document, undefined) {
             return module.exports;
         }
 
-        globalEval("(function(require, exports, module){"+module.text+"\n})")(
+        globalEval("(function(require, exports, module){"+module.t+"\n})")(
             function require (id) {
                 return getExports(MODULES[resolve(module.l, id)]);
             }, // require
