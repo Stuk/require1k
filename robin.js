@@ -14,12 +14,17 @@ R = (function (global, document) {
 
     baseElement.href = "";
 
-    function resolve(base, relative) {
-        baseElement.href = base;
-        relativeElement.href = relative;
-        var resolved = relativeElement.href;
-        baseElement.href = "";
+    function resolve(base, relative, resolved) {
+        if (/^\./.test(relative)) {
+            baseElement.href = base;
+            relativeElement.href = relative;
+            resolved = relativeElement.href;
+            baseElement.href = "";
+        } else {
+            resolved = resolve(base, "./node_modules/" + relative);
+        }
         return resolved;
+
     }
 
     function getModule(location) {
@@ -38,10 +43,10 @@ R = (function (global, document) {
         var location = module.l;
 
         var request = new XMLHttpRequest();
-        request.onload = function () {
+        request.onload = function (text, o) {
             if (request.status == 200) {
-                var text = module.text = request.response;
-                var o = {};
+                text = module.text = request.response;
+                o = {};
                 text.replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function (_, id) {
                     o[id] = true;
                 });
@@ -57,6 +62,14 @@ R = (function (global, document) {
                     }
                 }
                 for (var i = 0; i < deps.length; i++) {
+                    // if (!/^\./.test(deps[i])) {
+                    //     // id = id.match(/([^\/]+)\/(.*)/);
+                    //     // base = module.m[relative[1]];
+                    //     // return resolve(base, "./" + relative[2]);
+                    //     text = resolve(module.l, "./node_modules/" + deps[i]);
+                    // } else {
+                    //     text = ;
+                    // }
                     deepLoad(getModule(resolve(module.l, deps[i])), loaded);
                 }
                 loaded();

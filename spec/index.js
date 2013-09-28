@@ -6,3 +6,5 @@ console.log(second.thing);
 R("./three", function (exports) {
     console.log("R callback", exports);
 });
+
+require("dep/index");
