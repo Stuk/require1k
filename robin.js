@@ -1,5 +1,5 @@
 /*jshint node:false, -W082, -W017 */
-R = (function (global, document) {
+R = (function (global, document, undefined) {
     var MODULES = {};
 
     // By using a named "eval" most browsers will execute in the global scope.
@@ -36,7 +36,7 @@ R = (function (global, document) {
 
     function deepLoad(module, callback) {
         if (module.g) {
-            return callback(module);
+            return callback(module.e, module);
         }
         module.g = true;
 
@@ -58,21 +58,28 @@ R = (function (global, document) {
                     // and the decrement after saves us an `if` for that
                     // special case
                     if (!count--) {
-                        callback(module);
+                        callback(undefined, module);
                     }
                 }
-                for (var i = 0; i < deps.length; i++) {
-                    // if (!/^\./.test(deps[i])) {
-                    //     // id = id.match(/([^\/]+)\/(.*)/);
-                    //     // base = module.m[relative[1]];
-                    //     // return resolve(base, "./" + relative[2]);
-                    //     text = resolve(module.l, "./node_modules/" + deps[i]);
-                    // } else {
-                    //     text = ;
-                    // }
-                    deepLoad(getModule(resolve(module.l, deps[i])), loaded);
-                }
+                deps.forEach(function (dep) {
+                    o = loaded;
+                    if (!/^\./.test(dep)) {
+                        // Recurse up the tree trying to find the dependency
+                        // (generating 404s on the way)
+                        text = "/../";
+                        o = function (err, m) {
+                            if (err) {
+                                deepLoad(m.n = getModule(resolve(module.l + (text += "../"), dep)), o);
+                            } else {
+                                loaded();
+                            }
+                        };
+                    }
+                    deepLoad(getModule(resolve(module.l, dep)), o);
+                });
                 loaded();
+            } else {
+                callback(module.e = true, module);
             }
         };
         request.open("GET", location + ".js", true);
@@ -80,6 +87,9 @@ R = (function (global, document) {
     }
 
     function getExports(module) {
+        if (module.n) {
+            return getExports(module.n);
+        }
         if (module.exports) {
             return module.exports;
         }
@@ -96,7 +106,7 @@ R = (function (global, document) {
     }
 
     function R(id, callback) {
-        deepLoad(getModule(resolve(location, id)), function (module) {
+        deepLoad(getModule(resolve(location, id)), function (_, module) {
             id = getExports(module);
             if (callback) {
                 callback(id);
