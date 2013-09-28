@@ -24,11 +24,11 @@ R = (function (global, document, undefined) {
     }
 
     // A module has the following properties (shorted to one letter to aid compression)
-    // - g: boolean, loadinG, true if this module has been requested for loading
+    // - g: booleany, loadinG, truthy if this module has been requested for loading
     //      before. Used to prevent the same module being loaded twice
     // - l: string, Location, the url location of this module
     // - t: string, Text, the text content of the module
-    // - e: boolean-y, Error, truthy if there was an error (probably a 404) loading the module
+    // - e: booleany, Error, truthy if there was an error (probably a 404) loading the module
     // - n: module object, Next, instead of using this module, use the object
     //      pointed to by this property. Used for dependencies in other packages
     // - exports, object, the exports of the module!
@@ -40,9 +40,8 @@ R = (function (global, document, undefined) {
         if (module.g) {
             return callback(module.e, module);
         }
-        module.g = true;
 
-        var location = module.l;
+        var location = module.g = module.l;
 
         var request = new XMLHttpRequest();
         request.onload = function (text, deps, count) {
