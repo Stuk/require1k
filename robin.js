@@ -37,10 +37,7 @@ R = (function (global, document, undefined) {
     //      pointed to by this property. Used for dependencies in other packages
     // - exports, object, the exports of the module!
     function getModule(location) {
-        if (!MODULES[location]) {
-            MODULES[location] = {l: location};
-        }
-        return MODULES[location];
+        return MODULES[location] || (MODULES[location] = {l: location});
     }
 
     function deepLoad(module, callback) {
