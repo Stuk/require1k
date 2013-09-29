@@ -10,7 +10,6 @@ R = (function (global, document, undefined) {
         baseElement = document[tmp]("base"),
         relativeElement = document[tmp]("a");
     document.head.appendChild(baseElement);
-    tmp = "exports";
 
     function resolve(base, relative, resolved) {
         baseElement.href = base;
@@ -122,6 +121,7 @@ R = (function (global, document, undefined) {
     if (tmp) {
         R(tmp.getAttribute("data-main"));
     }
+    tmp = "exports";
 
     return R;
 
