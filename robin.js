@@ -36,7 +36,7 @@ R = (function (global, document, undefined) {
         return MODULES[location] = MODULES[location] || {l: location};
     }
 
-    function deepLoad(module, callback) {
+    function deepLoad(module, callback, parentLocation, path, dep) {
         if (module.g) {
             return callback(module.e, module);
         }
@@ -63,24 +63,28 @@ R = (function (global, document, undefined) {
                     }
                 }
                 deps.map(function (dep) {
-                    deps = loaded;
-                    if (dep[0] != ".") {
-                        // Recurse up the tree trying to find the dependency
-                        // (generating 404s on the way)
-                        text = "../";
-                        deps = function (err, m) {
-                            if (err) {
-                                deepLoad(m.n = getModule(resolve(location + (text += "../"), dep)), deps);
-                            } else {
-                                loaded();
-                            }
-                        };
-                    }
-                    deepLoad(getModule(resolve(module.l, dep)), deps);
+                    deepLoad(
+                        getModule(resolve(module.l, dep)),
+                        loaded,
+                        // If it doesn't begin with a ".", then we're searching
+                        // node_modules, so pass in the info to make this
+                        // possible
+                        dep[0] != "." ? location : undefined ,
+                        "/../",
+                        dep
+                    );
                 });
                 loaded();
             } else {
-                callback(module.e = request, module);
+                module.e = request;
+                // parentLocation is only given if we're searching in node_modules
+                if (parentLocation) {
+                    // Recurse up the tree trying to find the dependency
+                    // (generating 404s on the way)
+                    deepLoad(module.n = getModule(resolve(parentLocation + (path += "../"), dep)), callback, parentLocation, path, dep);
+                } else {
+                    callback(request, module);
+                }
             }
         };
         request.open("GET", location + ".js", true);
