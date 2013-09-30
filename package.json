@@ -1,8 +1,8 @@
 {
-  "name": "robin",
-  "version": "0.0.0",
-  "description": "ERROR: No README.md file found!",
-  "main": "robin.js",
+  "name": "require1k",
+  "version": "0.0.1",
+  "description": "A minimal, and yet practically useful, CommonJS/Node.js `require` module loader for the browser in under 1000 bytes",
+  "main": "require1k.min.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
