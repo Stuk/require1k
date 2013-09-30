@@ -125,4 +125,4 @@ R = (function (global, document, undefined) {
 
     return R;
 
-}(window, document));
+}(this, document));
