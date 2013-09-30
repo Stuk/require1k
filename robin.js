@@ -109,10 +109,10 @@ R = (function (global, document, undefined) {
     }
 
     function R(id, callback) {
-        deepLoad(getModule(resolve(location, id)), function (_, module) {
+        deepLoad(getModule(resolve(location, id)), function (err, module) {
             id = getExports(module);
             if (callback) {
-                callback(id);
+                callback(err, id);
             }
         });
     }
