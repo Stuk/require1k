@@ -15,6 +15,8 @@ R = (function (global, document, undefined) {
     // http://www.davidflanagan.com/2010/12/global-eval-in.html
     var globalEval = eval;
 
+    // this variable is reused for a number of things to reduce the repetition
+    // of strings. In the end is becomes "exports"
     var tmp = "createElement",
         baseElement = document[tmp]("base"),
         relativeElement = document[tmp]("a");
