@@ -5,8 +5,13 @@
   "main": "require1k.min.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "uglifyjs require1k.js -c -m > require1k.min.js; ls -l require1k.min.js"
   },
   "repository": "",
   "author": "Stuart Knightley <stuart@stuartk.com>",
-  "license": "BSD"
+  "license": "BSD",
+  "devDependencies": {
+    "jasminum": "0.0.4",
+    "uglify-js": "^2.4.15"
+  }
 }
