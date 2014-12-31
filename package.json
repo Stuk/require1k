@@ -4,7 +4,7 @@
   "description": "A minimal, and yet practically useful, CommonJS/Node.js `require` module loader for the browser in under 1000 bytes",
   "main": "require1k.min.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "uglifyjs require1k.js -c -m > require1k.min.js; ls -l require1k.min.js"
   },
   "repository": "",

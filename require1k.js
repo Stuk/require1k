@@ -28,7 +28,7 @@ R = (function (global, document, undefined) {
         // If the relative url begins with a letter (and not a "."), then it's
         // in node_modules
         relativeElement.href = relative.replace(/^(\w)/, "./node_modules/$1");
-        resolved = relativeElement.href;
+        resolved = relativeElement.href + ".js";
         baseElement.href = "";
         return (MODULES[resolved] = MODULES[resolved] || {l: resolved});
     }
@@ -84,7 +84,7 @@ R = (function (global, document, undefined) {
                 }
             }
         };
-        request.open("GET", location + ".js", true);
+        request.open("GET", location, true);
         request.send();
     }
 
@@ -94,7 +94,7 @@ R = (function (global, document, undefined) {
         }
 
         if (!module[tmp]) {
-            globalEval("(function(require,exports,module){"+module.t+"\n})")(
+            globalEval("(function(require,exports,module){" + module.t + "\n})//# sourceURL=" + module.l)(
                 function require (id) {
                     return getExports(resolveAndGetModule(module.l, id));
                 }, // require
