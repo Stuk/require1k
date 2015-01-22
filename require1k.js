@@ -110,9 +110,9 @@ R = (function (document, undefined) {
         // If 2 arguments are given, then we are resolving modules...
         if (relative) {
             baseElement.href = baseOrModule;
-            // If the relative url begins with a letter (and not a "."), then it's
+            // If the relative url doesn't begin with a ".", then it's
             // in node_modules
-            relativeElement.href = relative.replace(/^(\w)/, "./node_modules/$1");
+            relativeElement.href = relative[0] != "." ? "./node_modules/" + relative : relative;
             resolved = relativeElement.href + ".js";
             baseElement.href = "";
             return (MODULES[resolved] = MODULES[resolved] || {l: resolved});
