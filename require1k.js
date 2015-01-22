@@ -23,17 +23,6 @@ R = (function (global, document, undefined) {
         relativeElement = document[tmp]("a");
     document.head.appendChild(baseElement);
 
-    // `resolve` and `getModule` combined into one function to save bytes
-    function resolveAndGetModule(base, relative, resolved) {
-        baseElement.href = base;
-        // If the relative url begins with a letter (and not a "."), then it's
-        // in node_modules
-        relativeElement.href = relative.replace(/^(\w)/, "./node_modules/$1");
-        resolved = relativeElement.href + ".js";
-        baseElement.href = "";
-        return (MODULES[resolved] = MODULES[resolved] || {l: resolved});
-    }
-
     function deepLoad(module, callback, parentLocation, path, dep) {
         if (module.g) {
             return callback(module.e, module);
@@ -60,7 +49,7 @@ R = (function (global, document, undefined) {
                 }
                 deps.map(function (dep) {
                     deepLoad(
-                        resolveAndGetModule(module.l, dep),
+                        resolveModuleOrGetExports(module.l, dep),
                         loaded,
                         // If it doesn't begin with a ".", then we're searching
                         // node_modules, so pass in the info to make this
@@ -77,7 +66,13 @@ R = (function (global, document, undefined) {
                 if (parentLocation) {
                     // Recurse up the tree trying to find the dependency
                     // (generating 404s on the way)
-                    deepLoad(module.n = resolveAndGetModule(parentLocation + (path += "../"), dep), callback, parentLocation, path, dep);
+                    deepLoad(
+                        module.n = resolveModuleOrGetExports(parentLocation + (path += "../"), dep),
+                        callback,
+                        parentLocation,
+                        path,
+                        dep
+                    );
                 } else {
                     callback(request, module);
                 }
@@ -91,29 +86,48 @@ R = (function (global, document, undefined) {
         }
     }
 
-    function getExports(module) {
-        if (module.n) {
-            return getExports(module.n);
+    // Save bytes by combining two functions
+    // - resolveModule which resolves a given relative path against the given
+    //   base, and returns an existing or new module object
+    // - getExports which returns the existing exports or runs the factory to
+    //   create the exports for a module
+    function resolveModuleOrGetExports(baseOrModule, relative, resolved) {
+        // If 2 arguments are given, then we are resolving modules...
+        if (relative) {
+            baseElement.href = baseOrModule;
+            // If the relative url begins with a letter (and not a "."), then it's
+            // in node_modules
+            relativeElement.href = relative.replace(/^(\w)/, "./node_modules/$1");
+            resolved = relativeElement.href + ".js";
+            baseElement.href = "";
+            return (MODULES[resolved] = MODULES[resolved] || {l: resolved});
         }
 
-        if (!module[tmp]) {
-            (module.f || globalEval("(function(require,exports,module){" + module.t + "\n})//# sourceURL=" + module.l))(
+        // ...otherwise we are getting the exports
+
+        // Is this module is a redirect to another one?
+        if (baseOrModule.n) {
+            return resolveModuleOrGetExports(baseOrModule.n);
+        }
+
+        if (!baseOrModule[tmp]) {
+            (baseOrModule.f || globalEval("(function(require,exports,module){" + baseOrModule.t + "\n})//# sourceURL=" + baseOrModule.l))(
                 function require (id) {
-                    return getExports(resolveAndGetModule(module.l, id));
+                    return resolveModuleOrGetExports(resolveModuleOrGetExports(baseOrModule.l, id));
                 }, // require
-                module[tmp] = {}, // exports
-                module // module
+                baseOrModule[tmp] = {}, // exports
+                baseOrModule // module
             );
         }
 
-        return module[tmp];
+        return baseOrModule[tmp];
     }
 
     function R(id, callback) {
-        // If id has a `call` property, it is a function, so make a module with
+        // If id has a `call` property it is a function, so make a module with
         // a factory
-        deepLoad(id.call ? {l: "", t: "" + id, f: id} : resolveAndGetModule("", id), function (err, module) {
-            id = getExports(module);
+        deepLoad(id.call ? {l: "", t: "" + id, f: id} : resolveModuleOrGetExports("", id), function (err, module) {
+            id = resolveModuleOrGetExports(module);
             if (callback) {
                 callback(err, id);
             }
