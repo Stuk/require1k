@@ -1,5 +1,5 @@
 /*jshint node:false, -W082, -W017 */
-R = (function (global, document, undefined) {
+R = (function (document, undefined) {
     // Each module has the following properties (shorted to one letter to aid compression)
     // - g: booleany, loadinG, truthy if this module has been requested for loading
     //      before. Used to prevent the same module being loaded twice
@@ -151,4 +151,4 @@ R = (function (global, document, undefined) {
 
     return R;
 
-}(this, document));
+}(document));
