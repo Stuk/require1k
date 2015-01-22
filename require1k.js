@@ -84,7 +84,7 @@ R = (function (global, document, undefined) {
             }
         };
         if (module.t) {
-            request.onload(module.t);
+            request.onload();
         } else {
             request.open("GET", location, true);
             request.send();
