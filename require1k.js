@@ -8,7 +8,7 @@ R = (function (global, document, undefined) {
     // - e: booleany, Error, truthy if there was an error (probably a 404) loading the module
     // - n: module object, Next, instead of using this module, use the object
     //      pointed to by this property. Used for dependencies in other packages
-    // - f: factory, a function to use instead of eval'ing module.t
+    // - f: function, Factory, a function to use instead of eval'ing module.t
     // - exports, object, the exports of the module!
     var MODULES = {};
 
@@ -24,6 +24,10 @@ R = (function (global, document, undefined) {
     document.head.appendChild(baseElement);
 
     function deepLoad(module, callback, parentLocation, path, dep) {
+        // If this module is already loading then don't proceed.
+        // This is a bug.
+        // If a module is requested but not loaded then the module isn't ready,
+        // but we callback as if it is. Oh well, 1k!
         if (module.g) {
             return callback(module.e, module);
         }
@@ -33,6 +37,8 @@ R = (function (global, document, undefined) {
         var request = new XMLHttpRequest();
         request.onload = function (deps, count) {
             if (request.status == 200 || module.t) {
+                // Should really use an object and then Object.keys to avoid
+                // duplicate dependencies. But that costs bytes.
                 deps = [];
                 (module.t = module.t || request.response).replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function (_, id) {
                     deps.push(id);
@@ -78,6 +84,9 @@ R = (function (global, document, undefined) {
                 }
             }
         };
+
+        // If the module already has text because we're using a factory
+        // function, then there's no need to load the file!
         if (module.t) {
             request.onload();
         } else {
