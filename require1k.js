@@ -8,6 +8,7 @@ R = (function (global, document, undefined) {
     // - e: booleany, Error, truthy if there was an error (probably a 404) loading the module
     // - n: module object, Next, instead of using this module, use the object
     //      pointed to by this property. Used for dependencies in other packages
+    // - f: factory, a function to use instead of eval'ing module.t
     // - exports, object, the exports of the module!
     var MODULES = {};
 
@@ -41,14 +42,12 @@ R = (function (global, document, undefined) {
         var location = module.g = module.l;
 
         var request = new XMLHttpRequest();
-        request.onload = function (text, deps, count) {
-            if (request.status == 200) {
-                text = module.t = request.response;
-                deps = {};
-                text.replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function (_, id) {
-                    deps[id] = true;
+        request.onload = function (deps, count) {
+            if (request.status == 200 || module.t) {
+                deps = [];
+                (module.t = module.t || request.response).replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function (_, id) {
+                    deps.push(id);
                 });
-                deps = Object.keys(deps);
                 count = deps.length;
                 function loaded() {
                     // We call loaded straight away below in case there
@@ -84,8 +83,12 @@ R = (function (global, document, undefined) {
                 }
             }
         };
-        request.open("GET", location, true);
-        request.send();
+        if (module.t) {
+            request.onload(module.t);
+        } else {
+            request.open("GET", location, true);
+            request.send();
+        }
     }
 
     function getExports(module) {
@@ -94,7 +97,7 @@ R = (function (global, document, undefined) {
         }
 
         if (!module[tmp]) {
-            globalEval("(function(require,exports,module){" + module.t + "\n})//# sourceURL=" + module.l)(
+            (module.f || globalEval("(function(require,exports,module){" + module.t + "\n})//# sourceURL=" + module.l))(
                 function require (id) {
                     return getExports(resolveAndGetModule(module.l, id));
                 }, // require
@@ -106,8 +109,18 @@ R = (function (global, document, undefined) {
         return module[tmp];
     }
 
-    function R(id, callback) {
-        deepLoad(resolveAndGetModule(location, id), function (err, module) {
+    function R(id, callback, module) {
+        if (id.call) {
+            module = {
+                l: "",
+                t: "" + id,
+                f: id
+            };
+        } else {
+            module = resolveAndGetModule("", id);
+        }
+
+        deepLoad(module, function (err, module) {
             id = getExports(module);
             if (callback) {
                 callback(err, id);

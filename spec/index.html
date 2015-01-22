@@ -3,7 +3,18 @@
 <head>
     <meta charset="utf-8">
     <title>require1k test</title>
-    <script type="text/javascript" src="../require1k.min.js" data-main="./index"></script>
+    <script type="text/javascript" src="../require1k.js"></script>
+    <script type="text/javascript">
+    // R("./index");
+    R(function (require, exports, module) {
+        console.log("module");
+        var three = require("./three");
+        module.exports = three;
+    }, function (err, exports) {
+        console.log("err", err);
+        console.log("exports", exports);
+    });
+    </script>
 </head>
 <body>
 
