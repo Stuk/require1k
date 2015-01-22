@@ -23,7 +23,15 @@ R = (function (document, undefined) {
         relativeElement = document[tmp]("a");
     document.head.appendChild(baseElement);
 
-    function deepLoad(module, callback, parentLocation, path, dep) {
+
+    // Loads the given module and all of it dependencies, recursively
+    // - module         The module object
+    // - callback       Called when everything has been loaded
+    // - parentLocation Location of the parent directory to look in. Only given
+    // for non-relative dependencies
+    // - id             The name of the dependency. Only used for non-relative
+    // dependencies
+    function deepLoad(module, callback, parentLocation, id) {
         // If this module is already loading then don't proceed.
         // This is a bug.
         // If a module is requested but not loaded then the module isn't ready,
@@ -60,8 +68,7 @@ R = (function (document, undefined) {
                         // If it doesn't begin with a ".", then we're searching
                         // node_modules, so pass in the info to make this
                         // possible
-                        dep[0] != "." ? location : undefined ,
-                        "/../",
+                        dep[0] != "." ? location + "/../" : undefined,
                         dep
                     );
                 });
@@ -73,11 +80,10 @@ R = (function (document, undefined) {
                     // Recurse up the tree trying to find the dependency
                     // (generating 404s on the way)
                     deepLoad(
-                        module.n = resolveModuleOrGetExports(parentLocation + (path += "../"), dep),
+                        module.n = resolveModuleOrGetExports(parentLocation += "../", id),
                         callback,
                         parentLocation,
-                        path,
-                        dep
+                        id
                     );
                 } else {
                     callback(request, module);
