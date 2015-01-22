@@ -109,18 +109,10 @@ R = (function (global, document, undefined) {
         return module[tmp];
     }
 
-    function R(id, callback, module) {
-        if (id.call) {
-            module = {
-                l: "",
-                t: "" + id,
-                f: id
-            };
-        } else {
-            module = resolveAndGetModule("", id);
-        }
-
-        deepLoad(module, function (err, module) {
+    function R(id, callback) {
+        // If id has a `call` property, it is a function, so make a module with
+        // a factory
+        deepLoad(id.call ? {l: "", t: "" + id, f: id} : resolveAndGetModule("", id), function (err, module) {
             id = getExports(module);
             if (callback) {
                 callback(err, id);
