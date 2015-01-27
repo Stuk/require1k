@@ -10,6 +10,10 @@ This project implements a minimal, and yet practically useful, CommonJS/Node.js 
 * Handles circular dependencies
 * It's 1k!
 
+## Examples
+
+* [React](examples/react)
+
 ## Usage
 
 In your modules you can use the `require` function, `exports` object and `module.exports` object as you would in Node. There are two ways to kick off the require system:
