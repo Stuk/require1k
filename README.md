@@ -1,4 +1,4 @@
-# CommonJS `require` in 1k
+# CommonJS `require` in 1k, with no build needed
 
 This project implements a minimal, and yet practically useful, CommonJS/Node.js `require` module loader for the browser in under 1000 bytes.
 
@@ -40,7 +40,7 @@ R(function (require, module, exports) {
 </script>
 ```
 
-Require1k also adds a global function, `R`, that accepts either a function or a module ID and an optional `callback`. When given a function it will load all the dependencies of the function and then execute it. If there was an error the callback gets passed the XMLHttpRequest object that failed as the first argument. It also gets passed the exports of the function, which is not particularly useful.
+Require1k also adds a global function, `R`, that accepts either a function or a module ID and an optional `callback`. When given a function it will load all the dependencies of the function and then execute it. If there was an error the callback gets passed the XMLHttpRequest object that failed as the first argument. It also gets passed the `exports` of the function, which you may find useful.
 
 ### global `R(id, [callback(err, exports)])` function
 
