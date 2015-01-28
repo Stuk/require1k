@@ -134,7 +134,7 @@ R = (function (document, undefined) {
         }
 
         if (!baseOrModule[tmp]) {
-            (baseOrModule.f || globalEval("(function(require,exports,module){" + baseOrModule.t + "\n})//# sourceURL=" + baseOrModule.l))(
+            (baseOrModule.f || globalEval("(function(require,"+tmp+",module){" + baseOrModule.t + "\n})//# sourceURL=" + baseOrModule.l))(
                 function require (id) {
                     return resolveModuleOrGetExports(resolveModuleOrGetExports(baseOrModule.l, id));
                 }, // require
