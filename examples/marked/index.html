@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Marked example &mdash; require1k</title>
+    <script src="/require1k.min.js"></script>
+    <script>
+    R(function (require) {
+        var marked = require("marked/index");
+        var input = document.getElementById("input");
+        var output = document.getElementById("output");
+
+        document.getElementById("button").addEventListener("click", function () {
+            output.innerHTML = marked(input.value);
+        }, false);
+    }, function (err, exports) {
+        if (err) {
+            console.error("Error:", err);
+        }
+    });
+    </script>
+</head>
+<body>
+    <h1><a href="https://www.npmjs.com/package/marked">Marked</a></h1>
+
+    <p><em>View source</em> to see the code.</p>
+
+    <p>
+        Enter markdown:<br/>
+        <textarea id="input" style="width: 300px; height: 100px;"></textarea><br/>
+        <button id="button">Convert markdown to HTML</button>
+    </p>
+
+
+    <p>Output:</p>
+    <div id="output"></div>
+</body>
+</html>
