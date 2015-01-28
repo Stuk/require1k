@@ -82,7 +82,7 @@ Alternatively you can provide a module ID and a optional `callback`. The named m
 
 The short answer: because it's a fun hack.
 
-The the long answer?
+The long answer?
 
 Using `<script>` tags to manage the dependencies of your "complex" web app makes for an unmaintainable mess.
 
