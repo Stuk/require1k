@@ -74,7 +74,6 @@ R = (function (document, undefined) {
                 });
                 loaded();
             } else {
-                module.e = request;
                 // parentLocation is only given if we're searching in node_modules
                 if (parentLocation) {
                     // Recurse up the tree trying to find the dependency
@@ -86,6 +85,7 @@ R = (function (document, undefined) {
                         id
                     );
                 } else {
+                    module.e = request;
                     callback(request, module);
                 }
             }
@@ -107,6 +107,14 @@ R = (function (document, undefined) {
     // - getExports which returns the existing exports or runs the factory to
     //   create the exports for a module
     function resolveModuleOrGetExports(baseOrModule, relative, resolved) {
+        // This should really be after the relative check, but because we are
+        // `throw`ing, it messes up the optimizations. If we are being called
+        // as resolveModule then the string `base` won't have the `e` property,
+        // so we're fine.
+        if (baseOrModule.e) {
+            throw baseOrModule.e;
+        }
+
         // If 2 arguments are given, then we are resolving modules...
         if (relative) {
             baseElement.href = baseOrModule;
@@ -142,7 +150,11 @@ R = (function (document, undefined) {
         // If id has a `call` property it is a function, so make a module with
         // a factory
         deepLoad(id.call ? {l: "", t: "" + id, f: id} : resolveModuleOrGetExports("", id), function (err, module) {
-            id = resolveModuleOrGetExports(module);
+            try {
+                id = resolveModuleOrGetExports(module);
+            } catch (_err) {
+                err = _err
+            }
             if (callback) {
                 callback(err, id);
             }
@@ -151,7 +163,7 @@ R = (function (document, undefined) {
 
     tmp = document.querySelector("script[data-main]");
     if (tmp) {
-        R(tmp.getAttribute("data-main"));
+        R(tmp.dataset.main);
     }
     tmp = "exports";
 

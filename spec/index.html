@@ -5,7 +5,7 @@
     <title>require1k test</title>
     <script type="text/javascript" src="../require1k.min.js"></script>
     <script type="text/javascript">
-    R("./index");
+    R("./index", console.warn.bind(console));
 
     R(function (require, exports, module) {
         console.log("module");
