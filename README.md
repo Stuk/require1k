@@ -12,6 +12,7 @@ This project implements a minimal, and yet practically useful, CommonJS/Node.js 
 
 ## Examples
 
+* [Simple](examples/simple)
 * [Marked](examples/marked) markdown parser
 * [React](examples/react) framework
 
