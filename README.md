@@ -1,4 +1,4 @@
-# CommonJS `require` in 1k, with no build needed
+# CommonJS `require` for the browser in 1k, with no build needed
 
 This project implements a minimal, and yet practically useful, CommonJS/Node.js `require` module loader for the browser in under 1000 bytes.
 
