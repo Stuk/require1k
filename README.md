@@ -88,7 +88,7 @@ Using `<script>` tags to manage the dependencies of your "complex" web app makes
 
 Yet that's what most people are doing today, and even what a large number of articles currently being published *still* recommend. People are writing large and sophisticated apps and then wasting their time managing dependencies by hand! There's just no need for it.
 
-Package management ensures you have a system for adding and updating libraries to your project. It means that you can easily check if your libraries are out of date, and see exactly what libraries your project depends on. It means that you don't have to go splunking around the web to find the site where you can report an issue or download an update for this random file you have in your `js/` directory. But module management is even more important.
+Package management ensures you have a system for adding and updating libraries to your project. It means that you can easily check if your libraries are out of date, and see exactly what libraries your project depends on. It means that you don't have to go spelunking around the web to find the site where you can report an issue or download an update for this random file you have in your `js/` directory. But module management is even more important.
 
 Module management is where you actually say "load this code for my app". And when you do this with a (multitude of) `<script>` tags on your page you can no longer isolate your code, and say "this is what this bit of code depends on". Every library you load is global. And what happens when you write some JavaScript that needs an extra library? You have to go back to this completely different file, and add something to the `HTML`. This is nonsense.
 
