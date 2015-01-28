@@ -13,7 +13,10 @@ layout: default
 {% capture include %}{% include usage.md %}{% endcapture %}
 {{ include | markdownify }}
 
-View the <a href="http://github.com/Stuk/require1k/blob/master/require1k.js">uncompressed version</a> on Github.
+<p>View the <a href="http://github.com/Stuk/require1k/blob/master/require1k.js">uncompressed version</a> on Github.</p>
+
+<p><a href="https://news.ycombinator.com/item?id=8961403" class="hn-share-button">Vote/comment on HN</a></p>
+<script src="//hnbutton.appspot.com/static/hn.min.js" async defer></script>
 
 </header>
 <section>
