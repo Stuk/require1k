@@ -2,7 +2,8 @@
 <html>
 <head>
     <title>Marked example &mdash; require1k</title>
-    <script src="/require1k.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../stylesheets/styles.css">
+    <script src="../../require1k.min.js"></script>
     <script>
     R(function (require) {
         var marked = require("marked/index");
@@ -24,9 +25,15 @@
 
     <p><em>View source</em> to see the code.</p>
 
+    <p>This example loads Marked, a single file markdown parser, which was downloaded with npm to node_modules.</p>
+
     <p>
         Enter markdown:<br/>
-        <textarea id="input" style="width: 300px; height: 100px;"></textarea><br/>
+        <textarea id="input" style="width: 300px; height: 100px;"># Hello, World!
+
+* one
+* two
+* three</textarea><br/>
         <button id="button">Convert markdown to HTML</button>
     </p>
 

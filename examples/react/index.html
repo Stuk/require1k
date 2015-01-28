@@ -2,7 +2,8 @@
 <html>
 <head>
     <title>React example &mdash; require1k</title>
-    <script src="/require1k.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../stylesheets/styles.css">
+    <script src="../../require1k.min.js"></script>
     <script>
     R(function (require) {
         // React breaks if process.env isn't available globally
@@ -37,10 +38,12 @@
 <body>
     <h1><a href="http://facebook.github.io/react/">React</a></h1>
 
-    <p><em>View source</em> to see the code. The following container is populated by React:</p>
+    <p><em>View source</em> to see the code.</p>
+
+    <p>React is spread across a large number of modules. Require1k has no problem loading it, althoguh it does generate a number of 404s. This is because because the parser used in require1k to extract dependencies doesn't understand JavaScript comments. Files like <a href="./react/node_modules/react/lib/ReactPropTypes.js">ReactPropTypes.js</a> include <code>require(...)</code> in a comment that does not resolve properly. These 404s slow down loading a bit, but are otherwise harmless</p>
+
+    <p>The following container is populated by React:</p>
 
     <div id="container" style="background: #EEE"></div>
-
-    <p>A large number of 404s are generated because the parser used in require1k to extract dependencies doesn't understand JavaScript comments. Files like <a href="./react/node_modules/react/lib/ReactPropTypes.js">ReactPropTypes.js</a> include <code>require(...)</code> in a comment that does not resolve properly. These 404s slow down loading a bit, but are otherwise harmless</p>
 </body>
 </html>
