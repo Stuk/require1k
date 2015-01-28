@@ -9,7 +9,7 @@ layout: default
 
 <h2>Install</h2>
 
-<p>Copy and paste:</p>
+<p>Copy and paste or <a href="http://github.com/Stuk/require1k/blob/master/require1k.min.js">download</a>:</p>
 {% capture include %}{% include usage.md %}{% endcapture %}
 {{ include | markdownify }}
 
