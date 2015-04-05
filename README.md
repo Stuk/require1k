@@ -15,9 +15,9 @@ This project implements a minimal, and yet practically useful, CommonJS/Node.js 
 
 ## Examples
 
-* [Simple](examples/simple)
-* [Marked](examples/marked) markdown parser
-* [React](examples/react) framework (!!)
+* [Simple](http://stuk.github.io/require1k/examples/simple/)
+* [Marked](http://stuk.github.io/require1k/examples/marked) markdown parser
+* [React](http://stuk.github.io/require1k/examples/react) framework (!!)
 
 ## Usage
 
