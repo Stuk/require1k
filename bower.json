@@ -2,7 +2,7 @@
   "name": "require1k",
   "main": "require1k.min.js",
   "version": "1.0.0",
-  "homepage": "https://github.com/vivaserver/require1k",
+  "homepage": "https://github.com/Stuk/require1k",
   "authors": [
     "Stuart Knightley <stuart@stuartk.com>"
   ],
