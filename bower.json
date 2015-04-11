@@ -1,0 +1,21 @@
+{
+  "name": "require1k",
+  "main": "require1k.min.js",
+  "version": "1.0.0",
+  "homepage": "http://stuk.github.io/require1k/",
+  "authors": [
+    "Stuart Knightley <stuart@stuartk.com>"
+  ],
+  "description": "A minimal, and yet practically useful, CommonJS/Node.js `require` module loader for the browser in under 1000 bytes",
+  "moduleType": [
+    "globals"
+  ],
+  "license": "BSD",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
