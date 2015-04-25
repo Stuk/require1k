@@ -43,8 +43,8 @@ R = (function (document, undefined) {
         var location = module.g = module.l;
 
         var request = new XMLHttpRequest();
-        request.onload = function (deps, count) {
-            if (request.status == 200 || module.t) {
+        function onLoad(deps, count) {
+            if (request.status == 200 || (request.status == 0 && request.response && request.response.length > 0) || module.t) {
                 // Should really use an object and then Object.keys to avoid
                 // duplicate dependencies. But that costs bytes.
                 deps = [];
@@ -91,12 +91,17 @@ R = (function (document, undefined) {
                     callback(request, module);
                 }
             }
+        }
+        request.onreadystatechange = function () {
+            if (request.readyState == 4) {
+                onLoad();
+            }
         };
 
         // If the module already has text because we're using a factory
         // function, then there's no need to load the file!
         if (module.t) {
-            request.onload();
+            onLoad();
         } else {
             request.open("GET", location, true);
             request.send();
