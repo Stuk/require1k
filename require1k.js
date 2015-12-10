@@ -128,7 +128,7 @@ R = (function (document, undefined) {
 
         // ...otherwise we are getting the exports
 
-        // Is this module is a redirect to another one?
+        // Is this module a redirect to another one?
         if (baseOrModule.n) {
             return resolveModuleOrGetExports(baseOrModule.n);
         }
