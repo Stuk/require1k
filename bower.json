@@ -1,7 +1,7 @@
 {
   "name": "require1k",
   "main": "require1k.min.js",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage": "http://stuk.github.io/require1k/",
   "authors": [
     "Stuart Knightley <stuart@stuartk.com>"

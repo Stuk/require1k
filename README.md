@@ -67,6 +67,16 @@ R("./index", function (err, index) {
 
 Alternatively you can provide a module ID and a optional `callback`. The named module is resolved against the location of the HTML file. If there was an error the callback gets passed the XMLHttpRequest object that failed as the first argument, otherwise the `exports` of the module are passed as the second argument. The callback may be called synchronously if the module is already in the internal module cache.
 
+## Using script[data-base]
+
+You can use the attribute `data-base` to set the base directory to load the main file. It usefull when you want to load file from the root server.
+
+```html
+<script src="require1k.min.js" data-main="/scripts/lib" data-base="/"></script>
+```
+
+By default, require1k converts `/scripts/lib` to `http://example.com/node_modules/scripts/lib.js`. With `data-base="/"`, require1k transform the URL to `http://example.com/scripts/lib.js`. This feature is needed when you use the HTML5 History Mode.
+
 ## Limitations
 
 * `package.json` files are not loaded, and so the `"main"` property is ignored. Modules inside packages must be requested by their full path, e.g. `var _ = require("underscore/underscore");`
