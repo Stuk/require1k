@@ -11,6 +11,9 @@ R = (function (document, undefined) {
     // - f: function, Factory, a function to use instead of eval'ing module.t
     // - exports, object, the exports of the module!
     var MODULES = {};
+    
+    // The base dir. Used with script[data-base]
+    var BASE = "";
 
     // By using a named "eval" most browsers will execute in the global scope.
     // http://www.davidflanagan.com/2010/12/global-eval-in.html
@@ -120,7 +123,7 @@ R = (function (document, undefined) {
             baseElement.href = baseOrModule;
             // If the relative url doesn't begin with a ".", then it's
             // in node_modules
-            relativeElement.href = relative[0] != "." ? "./node_modules/" + relative : relative;
+            relativeElement.href = (relative[0] != "." ? (baseOrModule ? "./node_modules/" : BASE) : "") + relative;
             resolved = relativeElement.href + ".js";
             baseElement.href = "";
             return (MODULES[resolved] = MODULES[resolved] || {l: resolved});
@@ -146,10 +149,25 @@ R = (function (document, undefined) {
         return baseOrModule[tmp];
     }
 
-    function R(id, callback) {
+    function R(id, base, callback) {
+        if (base) {
+            if (typeof base === 'function') {
+                callback = base;
+                base = "";
+            } else {
+                if (base[0] === '/') {
+                    base = base.substring(1);
+                }
+                
+                BASE = base;
+            }
+        } else {
+            base = "";
+        }
+        
         // If id has a `call` property it is a function, so make a module with
         // a factory
-        deepLoad(id.call ? {l: "", t: "" + id, f: id} : resolveModuleOrGetExports("", id), function (err, module) {
+        deepLoad(id.call ? {l: base, t: "" + id, f: id} : resolveModuleOrGetExports(base, id), function (err, module) {
             try {
                 id = resolveModuleOrGetExports(module);
             } catch (_err) {
@@ -163,7 +181,7 @@ R = (function (document, undefined) {
 
     tmp = document.querySelector("script[data-main]");
     if (tmp) {
-        R(tmp.dataset.main);
+        R(tmp.dataset.main, tmp.dataset.base);
     }
     tmp = "exports";
 
