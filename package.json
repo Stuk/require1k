@@ -1,6 +1,6 @@
 {
   "name": "require1k",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A minimal, and yet practically useful, CommonJS/Node.js `require` module loader for the browser in under 1000 bytes",
   "main": "require1k.min.js",
   "scripts": {
