@@ -48,7 +48,7 @@ R = (function (document, undefined) {
                 // Should really use an object and then Object.keys to avoid
                 // duplicate dependencies. But that costs bytes.
                 deps = [];
-                (module.t = module.t || request.response).replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function (_, id) {
+                (module.t = module.t || request.response).replace(/^(?![\/\*])(?:[\s\w\$.=\(\)]*)?require\s*\(\s*["']([^"']*)["']\s*\)/gmi, function (_, id) {
                     deps.push(id);
                 });
                 count = deps.length;
