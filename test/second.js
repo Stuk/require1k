@@ -3,4 +3,4 @@ console.log("loaded second");
 exports.thing = "asd";
 
 require("./index");
-console.log(require("./three"));
+assert(require("./three") === "three", "require should return exports")

@@ -5,6 +5,13 @@
     <title>require1k test</title>
     <script type="text/javascript" src="../require1k.min.js"></script>
     <script type="text/javascript">
+        window.assert = function (value, message) {
+            if (!value) {
+                throw new Error("Assertion failure: " + message);
+            }
+        }
+    </script>
+    <script type="text/javascript">
     R("./index", console.warn.bind(console));
 
     R(function (require, exports, module) {
@@ -12,8 +19,9 @@
         var three = require("./three");
         module.exports = three;
     }, function (err, exports) {
-        console.log("err", err);
-        console.log("exports", exports);
+        console.log("html R callback");
+        assert(err === undefined, "err in callback should be undefined");
+        assert(exports === "three", "exports from function should be correct");
     });
     </script>
 </head>
