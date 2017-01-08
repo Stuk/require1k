@@ -10,3 +10,5 @@ R("./three", function (err, exports) {
 });
 
 require("dep/index");
+
+require("./multi-require/index");
