@@ -31,6 +31,9 @@ _require("./should-not-load");
 irequire("./should-not-load");
 o.require("./should-not-load");
 
+// this is still problematic if uncommented:
+// console.log('require("./should-not-load")')
+
 assert(
     eval('requ' + 'ire("./should-not-load")') !== 4,
     "Should not load modules from commented out code and lookalikes"
