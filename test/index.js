@@ -13,28 +13,4 @@ require("dep/index");
 
 require("./multi-require/index");
 
-console.log("should not load");
-/*
-  foo
-  require("./should-not-load");
-  bar
-*/
-
-// require("./should-not-load");
-function $require() {}
-function _require() {}
-function irequire() {}
-var o = {require: function(){}};
-
-$require("./should-not-load");
-_require("./should-not-load");
-irequire("./should-not-load");
-o.require("./should-not-load");
-
-// this is still problematic if uncommented:
-// console.log('require("./should-not-load")')
-
-assert(
-    eval('requ' + 'ire("./should-not-load")') !== 4,
-    "Should not load modules from commented out code and lookalikes"
-);
+require("./comment/index");
